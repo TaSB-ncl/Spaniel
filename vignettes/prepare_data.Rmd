@@ -1,0 +1,244 @@
+---
+title: "Prepare Data"
+output: html_document
+date: '2023-07-28'
+---
+
+```{r setup, include=FALSE}
+library(Voyager)
+library(SpatialExperiment)
+library(SpatialFeatureExperiment)
+library(SingleCellExperiment)
+library(ggplot2)
+library(scater)
+#> Loading required package: scuttle
+library(scuttle)
+library(scran)
+library(stringr)
+library(patchwork)
+library(bluster)
+library(rjson)
+theme_set(theme_bw())
+
+```
+
+
+## Sample Metadata
+
+The data being used in this workflow is taken from "Spatial Gene Expression 
+Changes in the Mouse Heart After Base-Targeted Irradiation"
+
+Radiation cardiotoxicity (RC) is a clinically significant 
+adverse effect of treatment for patients with thoracic malignancies. 
+Clinical studies in lung cancer have indicated that heart substructures 
+are not uniformly radiosensitive, and that dose to the heart base drives RC.
+
+This was a pilot experiment to determine whether spatial transcriptomics 
+could provide useful insights in this context. 
+
+
+### Experimental Design:
+2 samples
+2 conditions - irradiated heart and control
+4 adjacent sections taken from each tissue block (sample)
+8 sections in total
+
+
+The sample metadata is summarised below:
+
+
+```{r}
+dataDir <- "../testData/results"
+samples <- list.files( dataDir)
+
+
+samples_short <- samples %>% 
+  gsub("results_", "", .)  %>% 
+  gsub("_Results", "", .)
+
+sample_id <- samples_short %>% 
+  gsub("_.*", "", .)  
+
+
+
+condition <- c(rep("Control", 4), rep("irradiated", 4))
+tissue <- c(c(rep("tissue1", 4), rep("tissue2", 4)))
+
+sampleInfo <- data.frame(Fname = samples, 
+          id = samples_short, 
+          condition, 
+          tissue, 
+          sample_id
+          )
+
+sampleInfo
+```
+
+## Import the expression data
+
+The Voyager library Load in data and add in QC metrics
+
+More info at voyager
+
+
+```{r}
+pathToTenXOuts <- file.path(dataDir, sampleInfo$Fname, "outs")
+
+sfe <- SpatialFeatureExperiment::read10xVisiumSFE(
+                                      dirs = pathToTenXOuts, 
+                                      samples = sampleInfo$Fname, 
+                                      sample_id = sampleInfo$sample_id, 
+                                      type = "sparse", 
+                                      data = "filtered", 
+                                      images = "hires",
+                                      zero.policy=TRUE)
+
+```                        
+
+
+```{r}
+plotSpatialFeature(sfe, features = "sample_id",
+                   image_id = "hires", 
+                   maxcell = 5e4, 
+                   ncol = 2, 
+                   sample_id = "C01",
+                   color = "black", linetype = 0,
+                   
+                   ) + theme_classic()
+```
+
+
+
+
+## Add metadata and spot positions to data
+
+```{r}
+sfe <- prepareSFE(sfe, sampleInfo)
+```
+```{r}
+imgData(sfe) %>% str()
+```
+
+
+
+## Add Image annotations
+
+```{r}
+annotationDir <- "C:/Users/nrq2/OneDrive - Newcastle University/SpanielTest/testData/annotation_images"
+annotations <- list.files(annotationDir) 
+annoInfo <- data.frame(sample_id = gsub("_.*", "", annotations) ,
+  domain = gsub(".*_", "", annotations) %>% gsub("\\.jpg", "", .),jpg = annotations) %>% dplyr::filter(domain != "great-vessels")
+
+
+
+
+annoInfo
+```
+
+
+```{r}
+
+## to fix
+#sfe <- addAnnotations(sfe, annoInfo, annotationDir)
+##to fix! - doesn't work for great-vessels
+## factor the domain column so that domain is plotted on top
+
+for (i in 1:nrow(annoInfo)){
+  
+  sample_id <- annoInfo$sample_id[i]
+  domain_name <- annoInfo$domain[i]
+  image_name <- annoInfo$jpg[i]
+  img_file <- file.path(annotationDir, image_name)
+  
+  sfe <- domainToSFE(img_file, 
+                     domain_name, 
+                     sample_id, 
+                     sfe, 
+                     cln = 3,
+                     fll = 12)
+  
+  }
+
+domains <- annoInfo$domain[annoInfo$sample_id == "C01"]
+
+p1 <- plotSpatialFeature(sfe, domains[1:4],
+                   image_id = "hires", 
+                   maxcell = 5e4, 
+                   ncol = 2, 
+                   sample_id = "C01", linetype = 0)
+p2 <- plotSpatialFeature(sfe, domains[1],
+                   image_id = "hires", 
+                   maxcell = 5e4, 
+                   ncol = 2, 
+                   sample_id = "C01", linetype = 0)
+print(p2, vp=grid::viewport(angle=-90))                   
+
+```
+
+
+
+
+```{r}
+is_mt <- str_detect(rowData(sfe)$symbol, "^mt-")
+sfe <- addPerCellQCMetrics(sfe, subsets = list(mito = is_mt))
+```
+
+
+Spots where no genes are detected can be removed from the remainder of the 
+analysis.
+
+```{r}
+filter <- sfe$detected > 0
+sfe <- sfe[, filter]
+```
+
+
+The filtered data can then be normalised using the the "logNormCounts" 
+function from scuttle  
+and the expression of selected genes can be viewed on the histological image.
+
+
+
+
+```{r}
+sfe <- scuttle::logNormCounts(sfe)
+
+dec <- scran::modelGeneVar(sfe)
+hvgs <- getTopHVGs(dec, prop=0.1)
+
+
+sfe <- scater::runPCA(sfe,
+                      ncomponents = 30,
+                      scale = TRUE, 
+                      subset_row = hvgs)
+
+sfe <- scater::runUMAP(sfe, dimred="PCA")
+
+
+clust <- scran::clusterCells(sfe, BLUSPARAM=NNGraphParam(cluster.fun="louvain"), 
+                         use.dimred="PCA", full=TRUE)
+
+sfe$clust <- clust$clusters
+
+
+
+```
+
+
+```{r}
+scater::plotUMAP(sfe, colour_by = "left-ventricle")
+scater::plotUMAP(sfe, colour_by = "clust")
+```
+
+```{r}
+saveRDS(sfe, "../testData/rObjects/sfe.rds")
+saveRDS(sfe3, "../testData/rObjects/sfe3.rds")
+```
+
+
+### function to make
+
+compare clusters with histological region, number of spots, consistency etc
+
+
+
