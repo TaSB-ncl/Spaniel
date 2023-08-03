@@ -112,7 +112,7 @@ imageToCoords <- function(imgFile, cln, fll){
   
 }
 
-
+################################################################################
 #' Assign spots to histological domain
 #'
 #' @param domain_sp 
@@ -142,22 +142,7 @@ domainToColData <- function(domain_sp, spot_sp, sfe, domain_name, sample_id){
 
 
 
-
-#' Title
-#'
-#' @param x 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-
-test <- function(x){
-  return(y)
-}
-
-
-
+################################################################################
 #' FindDomain
 #' 
 #' This function converts painted histological domains created in Image 
@@ -200,6 +185,43 @@ domainToSFE <-  function(imgFile, domainName, sampleName, sfe, cln = 3, fll = 12
   sfe <- domainToColData(domain_sp, spot_sp, sfe, domain_name, sampleName)
   
   return(sfe)
+}
+
+################################################################################
+#' Find all domains
+#' 
+#' This function finds mulitple histological domains. It takes an annotation 
+#' data frame and sfe as input. 
+#'
+#' @param annoInfo 
+#' @param sfe 
+#' @param cln 
+#' @param fll 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+findAllDomains <- function(annoInfo, sfe, cln = 3, fll = 12){
+  
+  for (i in 1:nrow(annoInfo)){
+    
+    sample_id <- annoInfo$sample_id[i]
+    domain_name <- annoInfo$domain[i]
+    image_name <- annoInfo$jpg[i]
+    img_file <- file.path(annotationDir, image_name)
+    
+    sfe <- domainToSFE(img_file, 
+                       domain_name, 
+                       sample_id, 
+                       sfe, 
+                       cln = 3,
+                       fll = 12)
+    
+  }
+  
+  return(sfe)
+  
 }
 
 
