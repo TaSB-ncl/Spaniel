@@ -9,6 +9,8 @@ sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
 
 
 sample_id = "C01"
+
+
 ### get spatraster
 sr <- getImg(sfe, sample_id)@image
 
