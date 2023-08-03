@@ -7,7 +7,7 @@ date: '2023-07-28'
 ```{r setup, include=FALSE}
 source("../in_progress/findDomain.R")
 source("../in_progress/prepareSFE.R")
-source("../in_progress/wrap_unwrap_SFE_raster.R")
+#source("../in_progress/wrap_unwrap_SFE_raster.R")
 
 library(Voyager)
 library(SpatialExperiment)
@@ -54,6 +54,7 @@ The sample metadata is summarised below:
 
 ```{r}
 dataDir <- "../testData/results"
+
 samples <- list.files( dataDir)
 
 
@@ -77,6 +78,9 @@ sampleInfo <- data.frame(Fname = samples,
           )
 
 sampleInfo
+
+
+pathToTenXOuts <- file.path(dataDir, sampleInfo$Fname, "outs")
 ```
 
 ## Import the expression data
@@ -87,7 +91,7 @@ More info at voyager
 
 
 ```{r}
-pathToTenXOuts <- file.path(dataDir, sampleInfo$Fname, "outs")
+
 
 sfe <- SpatialFeatureExperiment::read10xVisiumSFE(
                                       dirs = pathToTenXOuts, 
@@ -99,8 +103,18 @@ sfe <- SpatialFeatureExperiment::read10xVisiumSFE(
                                       zero.policy=TRUE)
 
 
-```
 
+sfe_single <- SpatialFeatureExperiment::read10xVisiumSFE(
+                                      dirs = pathToTenXOuts, 
+                                      samples = sampleInfo$Fname[1], 
+                                      sample_id = sampleInfo$sample_id[1], 
+                                      type = "sparse", 
+                                      data = "filtered", 
+                                      images = "hires",
+                                      zero.policy=TRUE)
+
+
+```
 
 
 
@@ -134,21 +148,9 @@ annoInfo
 ##to fix! - doesn't work for great-vessels
 ## factor the domain column so that domain is plotted on top
 
-for (i in 1:nrow(annoInfo)){
-  
-  sample_id <- annoInfo$sample_id[i]
-  domain_name <- annoInfo$domain[i]
-  image_name <- annoInfo$jpg[i]
-  img_file <- file.path(annotationDir, image_name)
-  
-  sfe <- domainToSFE(img_file, 
-                     domain_name, 
-                     sample_id, 
-                     sfe, 
-                     cln = 3,
-                     fll = 12)
-  
-  }
+
+
+sfe <- findAllDomains(annoInfo, sfe)
 
 domains <- annoInfo$domain[annoInfo$sample_id == "C01"]
 ```
@@ -171,6 +173,9 @@ p2
 
 ```
 
+```{r}
+
+```
 
 
 
