@@ -12,6 +12,7 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 source("appFuncs.R")
+source("../in_progress/wrap_unwrap_SFE_raster.R")
 
 ui <- dashboardPage(
   dashboardHeader(title = paste0("Spaniel X.0.0") ),
@@ -96,7 +97,7 @@ server <- function(input, output, session){
   myData <- reactive({
     inFile <- input$file1
     if (is.null(inFile)) return(NULL)
-    data <- readRDS(inFile$datapath)
+    data <- readRDS(inFile$datapath) %>% unwrapSFE()
     return(data)
   })
   
