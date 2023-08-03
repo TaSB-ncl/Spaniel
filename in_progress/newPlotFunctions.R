@@ -1,18 +1,20 @@
+source("in_progress/wrap_unwrap_SFE_raster.R")
 library(SpatialFeatureExperiment)
+library(tidyterra)
+library(ggplot2)
+
+sample_id = "C01"
+sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
+
 
 
 sample_id = "C01"
-sfe2 <- readRDS("testData/rObjects/sfe.rds")
-sfe3 <- readRDS("testData/rObjects/sfe3.rds")
-
-
 ### get spatraster
 sr <- getImg(sfe, sample_id)@image
 
 
-
 ## pixel coordinates from sfe
-coords_sample <- spatialCoords(sfe[,sfe$sample_id == sample_id]) %>% 
+coords_sample <- spatialCoords(sfe[, sfe$sample_id == sample_id]) %>% 
   data.frame()
 
 coords_sample$X <- coords_sample$pxl_col_in_fullres
@@ -33,9 +35,4 @@ p2
 
 p2 + geom_point(aes(X, Y))
 
-## pixel coordinates from sfe
-coords_sample <- spatialCoords(sfe[,sfe$sample_id == sample_id])
-
-
-## scale pixels
 
