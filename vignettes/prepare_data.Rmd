@@ -7,7 +7,7 @@ date: '2023-07-28'
 ```{r setup, include=FALSE}
 source("../in_progress/findDomain.R")
 source("../in_progress/prepareSFE.R")
-#source("../in_progress/wrap_unwrap_SFE_raster.R")
+source("../in_progress/wrap_unwrap_SFE_raster.R")
 
 library(Voyager)
 library(SpatialExperiment)

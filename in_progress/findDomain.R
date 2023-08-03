@@ -168,7 +168,10 @@ domainToColData <- function(domain_sp, spot_sp, sfe, domain_name, sample_id){
 #' sfe <- domainToSFE(img_file, domain_name, "C01", sfe)
 
 
-domainToSFE <-  function(imgFile, domainName, sampleName, sfe, cln = 3, fll = 12){
+domainToSFE <-  function(imgFile, 
+                         domainName, 
+                         sampleName, 
+                         sfe, cln = 3, fll = 12){
  # convert spot coordinates back to sp
   spot_sf <- annotGeometry(sfe, type = "spots", sample_id = sampleName)
   spot_sp <- SFToSP(spot_sf)
