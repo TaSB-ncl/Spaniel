@@ -10,6 +10,14 @@ library(bluster)
 
 
 
+#' QC wrapper for shiny app
+#'
+#' @param data 
+#'
+#' @return A SFE object with QC columns
+#' @export
+#'
+#' @examples
 QC <- function(data){
   qc.metrics <- scater::perCellQCMetrics(data)
   colData(data) <- cbind(colData(data), qc.metrics)
@@ -22,15 +30,32 @@ QC <- function(data){
 }
 
 
-NormFindVarFeats <- function(dataIn){
-  dataIn <- dataIn[,dataIn$in_tissue]
-  data <- scater::logNormCounts(dataIn)
+#' Normalise counts & find variable features wrapper for shiny app
+#'
+#' @param data 
+#'
+#' @return A SFE object with log normalised counts, 
+#'         containing only genes that are highly variable.
+#' @export
+#'
+#' @examples
+NormFindVarFeats <- function(data){
+  data <- dataIn[,data$in_tissue]
+  data <- scater::logNormCounts(data)
   data.model <- modelGeneVar(data)
   hvg <- getTopHVGs(data.model, prop=0.1)
   data <- data[hvg,]
   return(data)
 }
 
+#' PCA, UMAP wrapper for shiny app
+#'
+#' @param data 
+#'
+#' @return An updated SFE object with PCA and UMAP reduced dimensions
+#' @export
+#'
+#' @examples
 DimRed <- function(data){
   redDim_pca <- calculatePCA(data)
   reducedDims(data) <- list(PCA = redDim_pca)
@@ -39,12 +64,30 @@ DimRed <- function(data){
   return(data)
 }
 
-SpClusters <- function(dataIn){
-  nn.clust <- clusterCells(dataIn, BLUSPARAM=NNGraphParam(cluster.fun="louvain"), use.dimred="PCA", full=TRUE)
-  dataIn$clusters <- nn.clust$clusters
-  return(dataIn)
+#' Cluster cells wrapper for shiny app
+#'
+#' @param data 
+#'
+#' @return Updated SFE object with column containing clustering info
+#' @export
+#'
+#' @examples
+SpClusters <- function(data){
+  nn.clust <- clusterCells(data, BLUSPARAM=NNGraphParam(cluster.fun="louvain"), use.dimred="PCA", full=TRUE)
+  data$clusters <- nn.clust$clusters
+  return(data)
 }
 
+#' findMarkers wrapper for shiny app
+#'
+#' @param data 
+#' @param colLabelName 
+#' @param cluster 
+#'
+#' @return Top ranked markers for each cluster in SFE object
+#' @export
+#'
+#' @examples
 Markers <- function(data, colLabelName, cluster){
   markers <- findMarkers(data, colData(data)[colLabelName] %>% unlist(), test.type = "wilcox", pval.type = "all")
   # need to add support for other clusters etc
@@ -53,6 +96,14 @@ Markers <- function(data, colLabelName, cluster){
   return(top.ranked)
 }
 
+#' Plot QC data in shiny app
+#'
+#' @param data 
+#'
+#' @return Plots of QC metrics
+#' @export
+#'
+#' @examples
 QCplots <- function(data){
   plot_grid(plotColData(data, x = 'sample_id', y = 'detected', colour_by = 'sample_id'),
             plotColData(data, y = "total", x = "sample_id", colour_by = "sample_id"))
@@ -63,6 +114,16 @@ QCplots <- function(data){
             ncol = 2)
 }
 
+#' Plot reduced dimensions of SFE object
+#'
+#' @param dataIn 
+#' @param reduction 
+#' @param mdCol 
+#'
+#' @return Plots of a reduced dimension in SFE object
+#' @export
+#'
+#' @examples
 RedDimsPlot <- function(dataIn, reduction='PCA', mdCol =''){
   if(mdCol != ''){
     plotReducedDim(dataIn, reduction, colour_by = mdCol)}
@@ -72,6 +133,16 @@ RedDimsPlot <- function(dataIn, reduction='PCA', mdCol =''){
   
 }
 
+#' Plot top markers of SFE object
+#'
+#' @param data 
+#' @param top 
+#' @param colLabel 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 MarkerPlots <- function(data, top, colLabel){
   #plotGroupedHeatmap(data, features=top, group=colLabel, 
   #                   center=TRUE, zlim=c(-3, 3))
@@ -79,6 +150,19 @@ MarkerPlots <- function(data, top, colLabel){
   
 }
 
+#' Plot a feature from SFE object on top of Visium image
+#'
+#' @param data 
+#' @param fill_feat 
+#' @param rotate 
+#' @param flip 
+#'
+#' @details Might not work with current SFE version?
+#'  
+#' @return Plot of a feature on top of visium image
+#' @export
+#'
+#' @examples
 plotSFE <- function(data, fill_feat, rotate = 0, flip = NULL){
   sf <- colGeometries(data)[[1]]
   spi <- getImg(data)
