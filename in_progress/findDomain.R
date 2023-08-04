@@ -160,7 +160,8 @@ combineDomains <- function(sfe, domain_names){
     apply(1 , paste, collapse = "")
   
   ## remove overlapping domains
-  #domains[!domains %in% annotations_sample$domain] <- NA
+  domain_names <- domain_names %>% gsub("\\.", "-", .)
+  domains[!domains %in% domain_names] <- NA
   
   
   sfe$domain <- domains
@@ -215,7 +216,7 @@ domainToSFE <-  function(imgFile,
   
   ## add to coldata
   sfe <- domainToColData(domain_sp, spot_sp, sfe, domain_name, sampleName)
-  ## single domain name column
+  
   
   return(sfe)
 }
@@ -252,7 +253,7 @@ findAllDomains <- function(annoInfo, sfe, cln = 3, fll = 12){
                        fll = 12)
     
   }
-  
+  ## single domain name column
   return(sfe)
   
 }
