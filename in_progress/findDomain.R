@@ -142,6 +142,35 @@ domainToColData <- function(domain_sp, spot_sp, sfe, domain_name, sample_id){
 
 
 
+#' Title
+#'
+#' @param sfe 
+#' @param domain_names 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#domains <- annoInfo$domain[annoInfo$sample_id == "C01"]
+combineDomains <- function(sfe, domain_names){
+  domain_names <- domain_names %>% gsub("-", "\\.", .)
+  domains <- colData(sfe) %>% 
+    data.frame() %>% 
+    dplyr::select(domain_names) %>% 
+    apply(1 , paste, collapse = "")
+  
+  ## remove overlapping domains
+  #domains[!domains %in% annotations_sample$domain] <- NA
+  
+  
+  sfe$domain <- domains
+  return(sfe)
+  
+}
+
+
+
+
 ################################################################################
 #' FindDomain
 #' 
@@ -186,6 +215,7 @@ domainToSFE <-  function(imgFile,
   
   ## add to coldata
   sfe <- domainToColData(domain_sp, spot_sp, sfe, domain_name, sampleName)
+  ## single domain name column
   
   return(sfe)
 }

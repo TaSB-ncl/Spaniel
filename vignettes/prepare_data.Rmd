@@ -254,7 +254,7 @@ sfe_wrapped <- readRDS("../testData/rObjects/wrapped_sfe.rds")
 sfe <- unwrapSFE(sfe_wrapped)
 
 ## check it loads
-p1 <- plotSpatialFeature(sfe, features = "centre",
+p1 <- plotSpatialFeature(sfe, features = "domain",
                    image_id = "hires", 
                    maxcell = 5e4, 
                    ncol = 2, 
