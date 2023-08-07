@@ -1,3 +1,5 @@
+# Dashbord options
+
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Main", tabName = "Main", icon = icon('home')),
@@ -75,3 +77,6 @@ dashBody <- dashboardBody(
     )
   )
 )
+
+
+# Shiny modules
