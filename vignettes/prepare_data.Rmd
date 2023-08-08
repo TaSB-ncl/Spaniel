@@ -124,6 +124,7 @@ sfe_single <- SpatialFeatureExperiment::read10xVisiumSFE(
 
 ```{r}
 sfe <- prepareSFE(sfe, sampleInfo)
+#sfe_single <- prepareSFE(sfe, sampleInfo[1,])
 ```
 
 
@@ -148,11 +149,10 @@ annoInfo
 ##to fix! - doesn't work for great-vessels
 ## factor the domain column so that domain is plotted on top
 
+sfe <- findAllDomains(sfe, annoInfo, annotationDir)
+## create a column containing all domains
+sfe <-combineDomains(sfe, unique(annoInfo$domain))
 
-
-sfe <- findAllDomains(annoInfo, sfe)
-
-domains <- annoInfo$domain[annoInfo$sample_id == "C01"]
 ```
 
 ## replace with spaniel plot images
@@ -200,8 +200,6 @@ function from scuttle
 and the expression of selected genes can be viewed on the histological image.
 
 
-
-
 ```{r}
 sfe <- scuttle::logNormCounts(sfe)
 
@@ -222,8 +220,6 @@ clust <- scran::clusterCells(sfe, BLUSPARAM=NNGraphParam(cluster.fun="louvain"),
 
 sfe$clust <- clust$clusters
 
-
-
 ```
 
 
@@ -231,8 +227,6 @@ sfe$clust <- clust$clusters
 scater::plotUMAP(sfe, colour_by = "left-ventricle")
 scater::plotUMAP(sfe, colour_by = "clust")
 ```
-
-
 
 
 ### TO Do! function to make
@@ -244,13 +238,19 @@ compare clusters with histological region, number of spots, consistency etc
 ```{r}
 sfe_wrapped <- wrapSFE(sfe)
 saveRDS(sfe_wrapped, "../testData/rObjects/wrapped_sfe.rds")
+
+sfe_single <- sfe[,sfe$sample_id == "C01"]
+sfe_single %>% 
+  wrapSFE() %>% 
+  saveRDS("../testData/rObjects/wrapped_sfe_single.rds")
+
 ```
 
 
 ## Unwrap Data
 
 ```{r}
-sfe_wrapped <- readRDS("../testData/rObjects/wrapped_sfe.rds")
+sfe <- readRDS("../testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
 sfe <- unwrapSFE(sfe_wrapped)
 
 ## check it loads
