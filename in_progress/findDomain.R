@@ -215,7 +215,7 @@ domainToSFE <-  function(imgFile,
                type = domainName) <- SPToSF(domain_sp, sampleName)
   
   ## add to coldata
-  sfe <- domainToColData(domain_sp, spot_sp, sfe, domain_name, sampleName)
+  sfe <- domainToColData(domain_sp, spot_sp, sfe, domainName, sampleName)
   
   
   return(sfe)
@@ -227,7 +227,11 @@ domainToSFE <-  function(imgFile,
 #' This function finds mulitple histological domains. It takes an annotation 
 #' data frame and sfe as input. 
 #'
-#' @param annoInfo 
+#' @param annoInfo a data frame with three columns. Thei first column must 
+#' contain a sample_id which matches with sample_ids in the sfe object, 
+#' the second column must contain a histological domain name name, 
+#' the third column must contain the image annotation file name. 
+#' 
 #' @param sfe 
 #' @param cln 
 #' @param fll 
@@ -236,26 +240,28 @@ domainToSFE <-  function(imgFile,
 #' @export
 #'
 #' @examples
-findAllDomains <- function(annoInfo, sfe, cln = 3, fll = 12){
+findAllDomains <- function(sfe, annoInfo, annotationDir, cln = 3, fll = 12){
   
   for (i in 1:nrow(annoInfo)){
     
-    sample_id <- annoInfo$sample_id[i]
-    domain_name <- annoInfo$domain[i]
-    image_name <- annoInfo$jpg[i]
+    
+    sample_id <- annoInfo[i, 1]
+    domain <- annoInfo[i, 2]
+    image_name <- annoInfo[i, 3]
+    
     img_file <- file.path(annotationDir, image_name)
     
-    sfe <- domainToSFE(img_file, 
-                       domain_name, 
-                       sample_id, 
+    sfe <- domainToSFE(imgFile = img_file, 
+                       domainName = domain, 
+                       sampleName = sample_id, 
                        sfe, 
                        cln = 3,
                        fll = 12)
-    
   }
-  ## single domain name column
   return(sfe)
   
 }
 
+
+sfe <- findAllDomains(sfe, annoInfo, annotationDir)  
 
