@@ -30,7 +30,9 @@ getCoordinatesSFE <- function(sfe, sample_id, sr_rotated){
 }
 
 
-#' Title
+#' format plot
+#' 
+#' Removes grid lines, background and ticks from plot
 #'
 #' @param p 
 #'
@@ -57,6 +59,19 @@ plotFormatting <- function(p){
 
 
 ################################################################################
+#' Add Plot Feature
+#' 
+#' Add plot feature to coordinates
+#'
+#' @param coords_sample 
+#' @param plot_type 
+#' @param plot_feat 
+#' @param sample_id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 addPlotFeatureSFE <- function(coords_sample, plot_type, plot_feat, sample_id){
   if(plot_type == "gene"){
     ## if gene plot join with counts
@@ -70,7 +85,7 @@ addPlotFeatureSFE <- function(coords_sample, plot_type, plot_feat, sample_id){
   return(coords_sample)
 }
 
-
+################################################################################
 #' Spaniel Plot SFE
 #'
 #' @param sfe 
