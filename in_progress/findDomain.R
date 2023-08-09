@@ -156,7 +156,7 @@ combineDomains <- function(sfe, domain_names){
   domain_names <- domain_names %>% gsub("-", "\\.", .)
   domains <- colData(sfe) %>% 
     data.frame() %>% 
-    dplyr::select(domain_names) %>% 
+    dplyr::select(all_of(domain_names)) %>% 
     apply(1 , paste, collapse = "")
   
   ## remove overlapping domains
@@ -263,5 +263,5 @@ findAllDomains <- function(sfe, annoInfo, annotationDir, cln = 3, fll = 12){
 }
 
 
-sfe <- findAllDomains(sfe, annoInfo, annotationDir)  
+
 
