@@ -3,6 +3,7 @@ library(SpatialExperiment)
 library(SpatialFeatureExperiment)
 library(tidyterra)
 library(ggplot2)
+library(cols4all)
 
 
 ################################################################################
@@ -29,8 +30,29 @@ getCoordinatesSFE <- function(sfe, sample_id, sr_rotated){
   return(coords_sample)
 }
 
+################################################################################
 
-#' format plot
+
+continuousPlot <- function(coords_sample, plot_feat, sr_rotated){
+
+#filter <- coords_sample[, plot_feat ] == 0
+#coords_sample[filter,plot_feat] <- NA
+
+p1 <- ggplot(coords_sample, aes(colour = !!enquos(plot_feat), 
+                                size = !!enquos(plot_feat))) +
+  geom_spatraster_rgb(data = sr_rotated) + 
+  scale_y_reverse() +
+  geom_point(aes(X, Y), alpha = 0.6, ) +
+  #ggplot2::scale_colour_gradient(low=colLow, high=colHigh) + 
+  #ggplot2::scale_size(range = c(ptSizeMin, ptSizeMax))  +
+  NULL
+
+return(p1)
+}
+
+
+################################################################################
+#' Format plot
 #' 
 #' Removes grid lines, background and ticks from plot
 #'
