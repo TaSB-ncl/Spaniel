@@ -1,4 +1,4 @@
-source("in_progress/wrap_unwrap_SFE_raster.R")
+#source("in_progress/wrap_unwrap_SFE_raster.R")
 library(SpatialExperiment)
 library(SpatialFeatureExperiment)
 library(tidyterra)
@@ -32,23 +32,6 @@ getCoordinatesSFE <- function(sfe, sample_id, sr_rotated){
 
 ################################################################################
 
-
-continuousPlot <- function(coords_sample, plot_feat, sr_rotated){
-
-#filter <- coords_sample[, plot_feat ] == 0
-#coords_sample[filter,plot_feat] <- NA
-
-p1 <- ggplot(coords_sample, aes(colour = !!enquos(plot_feat), 
-                                size = !!enquos(plot_feat))) +
-  geom_spatraster_rgb(data = sr_rotated) + 
-  scale_y_reverse() +
-  geom_point(aes(X, Y), alpha = 0.6, ) +
-  #ggplot2::scale_colour_gradient(low=colLow, high=colHigh) + 
-  #ggplot2::scale_size(range = c(ptSizeMin, ptSizeMax))  +
-  NULL
-
-return(p1)
-}
 
 
 ################################################################################
@@ -94,16 +77,18 @@ plotFormatting <- function(p){
 #' @export
 #'
 #' @examples
-addPlotFeatureSFE <- function(coords_sample, plot_type, plot_feat, sample_id){
+addPlotFeatureSFE <- function(sfe, coords_sample, plot_type, plot_feat, sample_id){
   if(plot_type == "gene"){
+    print("gene")
     ## if gene plot join with counts
     coords_sample[,plot_feat] <- logcounts(sfe)[rowData(sfe)$symbol == plot_feat,
                                                 sfe$sample_id == sample_id]  
-  } else(
+  } else{
+    print("metadata")
     ## else if metdata plot join with col data
     coords_sample[,plot_feat] <- colData(sfe)[sfe$sample_id == sample_id,
                                               plot_feat] 
-  )
+  }
   return(coords_sample)
 }
 
@@ -138,23 +123,30 @@ sr_rotated <- terra::flip(sr)
 ## get sample coordinates
 coords_sample <- getCoordinatesSFE(sfe, sample_id, sr_rotated)
 
+print("got coordinates")
+
 ## add plot feature
-coords_sample <- addPlotFeatureSFE(coords_sample, 
+coords_sample <- addPlotFeatureSFE(sfe,
+                                   coords_sample, 
                                    plot_type, 
                                    plot_feat, 
                                    sample_id)
+
+print("added plot feature")
 
 
 
 
 ## check if data is discrete or discrete
 if(class(coords_sample[,plot_feat]) %in% c("logical", "character", "factor")){
+  print("discrete")
   ## discrete
   p1 <- ggplot(coords_sample, aes(colour = !! ensym(plot_feat))) +
     geom_spatraster_rgb(data = sr_rotated) + 
     scale_y_reverse() +
     geom_point(aes(X, Y), alpha = 0.6)
 } else {
+  print("continuous")
   ## continuous
   ## remove 0 values for plotting
   filter <- coords_sample[, plot_feat ] == 0
@@ -176,22 +168,22 @@ p2 <- plotFormatting(p1)
 return(p2)
 }
 
-
-sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
-sample_id = "C01"
-
-## test plots work for different types
-spanielPlot_SFE(sfe, 
-                sample_id = "C01", 
-                plot_feat = "clust")
-
-spanielPlot_SFE(sfe,  
-                sample_id = "C01", 
-                plot_feat = "subsets_mito_percent", ptSizeMin = 0, 
-                ptSizeMax = 2) 
-
-spanielPlot_SFE(sfe, plot_type = "gene", 
-                sample_id = "C01", 
-                plot_feat = "Myl1")  
-
-
+# sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
+# sample_id = "C01"
+# plot_feat = "clust"
+# # 
+# ## test plots work for different types
+# spanielPlot_SFE(sfe,
+#                 sample_id = "C01",
+#                 plot_feat = "clust")
+# 
+# spanielPlot_SFE(sfe,
+#                 sample_id = "C01",
+#                 plot_feat = "subsets_mito_percent", ptSizeMin = 0,
+#                 ptSizeMax = 2)
+# 
+# spanielPlot_SFE(sfe, plot_type = "gene",
+#                 sample_id = "C01",
+#                 plot_feat = "Myl1")
+# # 
+# # 
