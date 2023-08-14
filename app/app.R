@@ -36,14 +36,15 @@ server <- function(input, output, session){
   
   plotReady <- reactiveValues(qc = FALSE, dimred = FALSE, image = FALSE, markers =FALSE, 
                               imagegene = FALSE)
-  
+  # RQ
+  # Modularise me!
   observe({
     shinyjs::disable("QCbtn")
     shinyjs::show("QCtext")
     print('click')
-    dataIn <- QC(myData())
+    dataIn <- myData()
     print(dataIn)
-    dataIn <- NormFindVarFeats(dataIn)
+    #dataIn <- NormFindVarFeats(dataIn)
     print(dataIn)
     print('boop')
     dataR(dataIn)
@@ -55,7 +56,7 @@ server <- function(input, output, session){
     shinyjs::disable("Dimredbtn")
     shinyjs::show("Dimredtext")
     print('click')
-    dataIn <- DimRed(dataR())
+    dataIn <- dataR()
     print(dataIn)
     dataIn <- SpClusters(dataIn)
     print(dataIn)
@@ -202,6 +203,9 @@ server <- function(input, output, session){
   output$brush_info <- renderPrint({
     brushedPoints(sfePoints, input$plot1_brush)
   })
+  
+  # RQ
+  # switch me to pixel coords
   
   selected <- reactive({
     # add clicked

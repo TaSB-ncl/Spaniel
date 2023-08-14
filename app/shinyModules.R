@@ -1,5 +1,5 @@
 # Dashbord options
-
+# Pls don't change me
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Main", tabName = "Main", icon = icon('home')),
@@ -29,16 +29,46 @@ dashBody <- dashboardBody(
       box(
         title = "How to upload", "Instructions go here"
       ))),
+    
+    
     tabItem(tabName = "QC", fluidRow(
       box(
         plotOutput("qc")),
       box(actionButton("QCbtn", "Go!"),
           shinyjs::hidden(p(id = "QCtext", "Processing...")) ) )),
-    tabItem(tabName = "Dimensionalityreduction", fluidRow(
-      box(plotOutput("dimred")),
-      tabBox(id = 'maindimred', tabPanel('Main', actionButton("Dimredbtn", "Go!"),
-                                         shinyjs::hidden(p(id = "Dimredtext", "Processing...")) ), 
-             tabPanel('PCA', 'filler'), tabPanel('UMAP', 'filler')) ) ),
+    
+    
+    tabItem(tabName = "Dimensionalityreduction",
+            fluidRow(
+              column(width = 4,
+                box(
+                  width = NULL,#plotOutput("marker")
+                    ),
+                box(
+                  width = NULL, #plotOutput("image")
+                )#,
+                # tabBox(id = 'maindimred', tabPanel('Main', actionButton("Dimredbtn", "Go!"),
+                #                          shinyjs::hidden(p(id = "Dimredtext", "Processing..."))
+                #                          ),
+                # tabPanel('PCA', 'filler'), tabPanel('UMAP', 'filler')
+                # )
+                ),
+
+              column(width = 4,
+                box(
+                  width = NULL, plotOutput("dimred")
+                    ),
+                box(
+                  width = NULL,
+                  selectInput("geneVisu", label="SELECT GENE",
+                              choices = NULL, selected = "Full", multiple = FALSE)
+                  )
+
+             )
+             )
+
+      ),
+    
     tabItem(tabName = "spotplot",
             tabBox(id = 'imagetabbed', tabPanel('Cluster',
                                                 plotOutput("image")),tabPanel('Gene', plotOutput('imagegene') )),
@@ -46,12 +76,15 @@ dashBody <- dashboardBody(
                             choices = NULL, selected = "Full", multiple = FALSE),
                 actionButton("imagebtn", "Go!"),
                 shinyjs::hidden(p(id = "Imagetext", "Processing...")) ) ),
+    
+    
     tabItem(tabName = "markers",
             box(plotOutput("marker"), width = 12),
             box(actionButton("markersbtn", "Go!"),
                 shinyjs::hidden(p(id = "markertext", "Processing...")),
                 selectInput("markerVisu", label="SELECT GENE",
                             choices = NULL, selected = "Full", multiple = TRUE)) ),
+    
     
     tabItem(tabName = "pselection", fluidRow(
       column(width = 4,

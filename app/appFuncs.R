@@ -40,7 +40,7 @@ QC <- function(data){
 #'
 #' @examples
 NormFindVarFeats <- function(data){
-  data <- dataIn[,data$in_tissue]
+  data <- data[,data$in_tissue]
   data <- scater::logNormCounts(data)
   data.model <- modelGeneVar(data)
   hvg <- getTopHVGs(data.model, prop=0.1)
