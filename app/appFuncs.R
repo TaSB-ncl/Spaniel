@@ -109,8 +109,8 @@ QCplots <- function(data){
             plotColData(data, y = "total", x = "sample_id", colour_by = "sample_id"))
   plot_grid(plotColData(data, y = "detected", x = "sample_id", colour_by = "sample_id"), 
             plotColData(data, y = "total", x = "sample_id", colour_by = "sample_id"), 
-            plotColData(data, y = "subsets_mt_percent",x = "sample_id", colour_by = "sample_id"), 
-            plotColData(data, y = "subsets_ribo_percent",x = "sample_id", colour_by = "sample_id"), 
+            plotColData(data, y = "subsets_mito_percent",x = "sample_id", colour_by = "sample_id"), 
+            #plotColData(data, y = "subsets_ribo_percent",x = "sample_id", colour_by = "sample_id"), 
             ncol = 2)
 }
 

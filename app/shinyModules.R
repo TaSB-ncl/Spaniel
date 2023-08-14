@@ -42,10 +42,10 @@ dashBody <- dashboardBody(
             fluidRow(
               column(width = 4,
                 box(
-                  width = NULL,#plotOutput("marker")
+                  width = NULL, plotOutput("marker")
                     ),
                 box(
-                  width = NULL, #plotOutput("image")
+                  width = NULL, plotOutput("image")
                 )#,
                 # tabBox(id = 'maindimred', tabPanel('Main', actionButton("Dimredbtn", "Go!"),
                 #                          shinyjs::hidden(p(id = "Dimredtext", "Processing..."))
@@ -60,7 +60,7 @@ dashBody <- dashboardBody(
                     ),
                 box(
                   width = NULL,
-                  selectInput("geneVisu", label="SELECT GENE",
+                  selectInput("markerVisu", label="SELECT GENE",
                               choices = NULL, selected = "Full", multiple = FALSE)
                   )
 
@@ -78,12 +78,12 @@ dashBody <- dashboardBody(
                 shinyjs::hidden(p(id = "Imagetext", "Processing...")) ) ),
     
     
-    tabItem(tabName = "markers",
-            box(plotOutput("marker"), width = 12),
-            box(actionButton("markersbtn", "Go!"),
-                shinyjs::hidden(p(id = "markertext", "Processing...")),
-                selectInput("markerVisu", label="SELECT GENE",
-                            choices = NULL, selected = "Full", multiple = TRUE)) ),
+    # tabItem(tabName = "markers",
+    #         box(plotOutput("marker"), width = 12),
+    #         box(actionButton("markersbtn", "Go!"),
+    #             shinyjs::hidden(p(id = "markertext", "Processing...")),
+    #             selectInput("markerVisu", label="SELECT GENE",
+    #                         choices = NULL, selected = "Full", multiple = TRUE)) ),
     
     
     tabItem(tabName = "pselection", fluidRow(

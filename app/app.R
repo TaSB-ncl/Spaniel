@@ -24,6 +24,9 @@ server <- function(input, output, session){
     inFile <- input$file1
     if (is.null(inFile)) return(NULL)
     data <- readRDS(inFile$datapath) %>% unwrapSFE()
+    plotReady$qc <- TRUE
+    plotReady$dimred <- TRUE
+    plotReady$markers <- TRUE
     return(data)
   })
   
@@ -127,8 +130,8 @@ server <- function(input, output, session){
                 plotColData(dataR(), y = "total", x = "sample_id", colour_by = "sample_id"))
       plot_grid(plotColData(dataR(), y = "detected", x = "sample_id", colour_by = "sample_id"),
                 plotColData(dataR(), y = "total", x = "sample_id", colour_by = "sample_id"),
-                plotColData(dataR(), y = "subsets_mt_percent",x = "sample_id", colour_by = "sample_id"),
-                plotColData(dataR(), y = "subsets_ribo_percent",x = "sample_id", colour_by = "sample_id"),
+                plotColData(dataR(), y = "subsets_mito_percent",x = "sample_id", colour_by = "sample_id"),
+                #plotColData(dataR(), y = "subsets_ribo_percent",x = "sample_id", colour_by = "sample_id"),
                 ncol = 2)
     }
   })
@@ -140,19 +143,10 @@ server <- function(input, output, session){
       shinyjs::hide("Dimredtext")
       print(plotReady$dimred)
       print(dataR())
-      plotUMAP(dataR(), colour_by='clusters')
+      plotUMAP(dataR(), colour_by='clust')
     }
   })
 
-  output$image <-renderPlot({
-    print(plotReady$image)
-    if (plotReady$image) {
-      #shinyjs::enable("QC")
-      shinyjs::hide("Imagetext")
-      ggplot(sfObj()) +
-        geom_sf(aes(fill = clusters, geometry = geometry))
-    }
-  })
   
   output$image <-renderPlot({
     print(plotReady$image)
@@ -180,13 +174,13 @@ server <- function(input, output, session){
   output$marker <-renderPlot({
     print(plotReady$markers)
     if (plotReady$markers) {
-      print(markersR())
+      #print(markersR())
       #shinyjs::enable("QC")
       print(input$markerVisu)
       marker_list <- as.vector(input$markerVisu)
       print(marker_list)
       shinyjs::hide("markertext")
-      MarkerPlots(dataR(), marker_list, "clusters")
+      MarkerPlots(dataR(), marker_list, "clust")
     }
   })
   

@@ -37,4 +37,15 @@ p2
 
 p2 + geom_point(aes(X, Y))
 
+## using sf
 
+sfeSample <- sfe[, sfe$sample_id == sample_id]
+
+sf <- colGeometries(sfeSample)[[1]]
+sf$clust <- sfeSample$clust
+sf$barcodes <- rownames(sf)
+counts_df <- as.data.frame(t(as.matrix(sfeSample@assays@data$counts)))
+counts_df$barcodes <- rownames(counts_df)
+sf <- sf %>% left_join(counts_df, by = 'barcodes')
+ggplot(sf) +
+  geom_spatraster_rgb(data = sr) + geom_sf(aes(fill = clust))
