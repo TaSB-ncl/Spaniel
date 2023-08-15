@@ -118,6 +118,7 @@ spanielPlot_SFE <- function(sfe,
 
 ### get spatraster
 sr <- getImg(sfe, sample_id)@image
+
 sr_rotated <- terra::flip(sr)
 
 ## get sample coordinates
@@ -187,3 +188,4 @@ return(p2)
 #                 plot_feat = "Myl1")
 # # 
 # # 
+
