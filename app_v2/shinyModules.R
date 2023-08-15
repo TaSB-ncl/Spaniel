@@ -77,3 +77,54 @@ spanielPlotServer <- function(id, sfe) {
     }
     )
 }
+
+
+qcPlotUI <- function(id) {
+  fluidRow(
+      box(
+        #width = NULL,
+        "plot",
+        plotOutput(NS(id, "plot"))
+      ),
+      
+      box(#width = NULL, 
+        #title = "input",
+        selectInput(NS(id, "metric1"), "Metrics", choices = NULL, selected = NULL, multiple = FALSE),
+        selectInput(NS(id, "sample1"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
+        
+      )
+    )
+}
+
+qcPlotServer <- function(id, sfe) {
+  
+  moduleServer(id, function(input, output, session) {
+    if(class(sfe) == "SpatialFeatureExperiment"){
+      observeEvent(c(input$metric1, input$sample1), {
+        if(input$metric1 == "" || input$sample1 == ""){return()}
+        print(input$sample)
+        sample_id <<- input$sample1
+        sr <- getImg(sfe, sample_id)@image
+        sfeSample <- sfe[, sfe$sample_id == sample_id]
+        sf <- colGeometries(sfeSample)[[1]]
+        sf$barcodes <- rownames(sf)
+        md_df <- colData(sfeSample) %>% as.data.frame()
+        # not actually barcodes??
+        md_df$barcodes <- rownames(sf)
+        sf <- sf %>% left_join(md_df, by = 'barcodes')
+        
+        metric <<- input$metric1
+        
+        output$plot <-renderPlot({
+          ggplot(sf) +
+            geom_spatraster_rgb(data = sr) + geom_sf(data = sf, aes(fill = .data[[metric]] ) )
+        }, res = 96)
+        
+
+      })
+    }
+  }
+  )
+}
+
+

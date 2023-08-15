@@ -41,13 +41,24 @@ server <- function(input, output, session){
                         choices = rownames(spatialObj()), selected = NULL)
       updateSelectInput(session, NS("test","sample"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL)
+      updateSelectInput(session, NS("qc1","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL)
+      updateSelectInput(session, NS("qc1","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL)
+      updateSelectInput(session, NS("qc2","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL)
+      updateSelectInput(session, NS("qc2","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL)
     }
       controlVars$dropdownsLoaded <- TRUE
   }) 
   
   observeEvent(input$file1, {
     if(controlVars$dropdownsLoaded){
+      qcPlotServer("qc1", spatialObj())
+      qcPlotServer("qc2", spatialObj())
       spanielPlotServer("test", spatialObj())
+      
     }
     
     })
