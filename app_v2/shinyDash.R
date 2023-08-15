@@ -29,10 +29,9 @@ dashBody <- dashboardBody(
               )
             ),
     tabItem(tabName = "spotplot",
-            fluidRow(
-              box(
+            #fluidPage(
                 spanielPlotUI("test")
-              )
-            ))
+              #)
   )
   )
+)

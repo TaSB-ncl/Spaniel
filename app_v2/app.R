@@ -6,6 +6,8 @@ library(tidyverse)
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
+library(tidyterra)
+library(SpatialFeatureExperiment)
 source("appFuncs.R")
 source("../in_progress/wrap_unwrap_SFE_raster.R")
 source("shinyModules.R")
@@ -20,26 +22,41 @@ ui <- dashboardPage(
 server <- function(input, output, session){
   options(shiny.maxRequestSize=30*1024^3)
   
-  spatialObj <- reactive({
+  controlVars <- reactiveValues(fileUploaded = FALSE, dropdownsLoaded = FALSE)
+  spatialObj <- reactiveVal()
+  
+  observeEvent(input$file1, {
     inFile <- input$file1
     if (is.null(inFile)) return(NULL)
     data <- readRDS(inFile$datapath) %>% unwrapSFE()
-    return(data)
+    spatialObj(data)
+    print(spatialObj())
+    controlVars$fileUploaded <- TRUE
+    print(controlVars$fileUploaded)
   })
   
-  observe({
-    # doesn't actually do anything...
-    if(!is.null(inFile)){
+  print(controlVars)
+  
+  
+  observeEvent(input$file1, {
+    if(controlVars$fileUploaded){
+      print("boops")
+      print(unique(spatialObj()$sample_id))
       updateSelectInput(session, NS("test","gene"), 
-                        choices = rownames(spatialObj()))
+                        choices = rownames(spatialObj()), selected = NULL)
       updateSelectInput(session, NS("test","sample"), 
-                        choices = unique(spatialObj()$sample_id))
+                        choices = unique(spatialObj()$sample_id), selected = NULL)
+    }
+      controlVars$dropdownsLoaded <- TRUE
+  }) 
+  
+  observeEvent(input$file1, {
+    if(controlVars$dropdownsLoaded){
+      print("plot server")
       spanielPlotServer("test", spatialObj())
     }
-  })
-  
-  
- 
+    
+    })
   
    
 }
