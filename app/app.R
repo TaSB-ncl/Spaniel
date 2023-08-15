@@ -1,5 +1,3 @@
-options(shiny.maxRequestSize=30*1024^2)
-
 #' @import shiny
 #' @import shinydashboard
 #' @import shinyjs
