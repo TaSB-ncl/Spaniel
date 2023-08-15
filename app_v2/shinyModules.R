@@ -1,12 +1,14 @@
 spanielPlotUI <- function(id) {
   fluidPage(
   fluidRow(
-
-  box(#width = NULL, 
-    "input",
+    
+  tabBox(#width = NULL, 
+    #title = "input",
+    tabPanel("Input",
       selectInput(NS(id, "gene"), "Genes", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(NS(id, "sample"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(NS(id, "clustering"), "Clustering method", choices = c("clust"), selected = NULL, multiple = FALSE)
+      selectInput(NS(id, "clustering"), "Clustering method", choices = c("clust"), selected = NULL, multiple = FALSE)),
+    tabPanel("UMAP", plotOutput(NS(id, "umapall")))
       
   ),
   box(
@@ -37,7 +39,7 @@ spanielPlotServer <- function(id, sfe) {
   
   moduleServer(id, function(input, output, session) {
     if(class(sfe) == "SpatialFeatureExperiment"){
-      observeEvent(c(input$gene, input$sample), {
+      observeEvent(c(input$gene, input$sample, input$clustering), {
         if(input$gene == "" || input$sample == "" || input$clustering == ""){return()}
         print(input$sample)
         sample_id <<- input$sample
@@ -65,7 +67,13 @@ spanielPlotServer <- function(id, sfe) {
         output$vlnplot <- renderPlot({
           scater::plotExpression(sfeSample, features = gene_name, x = clust, colour_by = clust)
         })
-      }
-      )
-    }})
+        
+        output$umapall <- renderPlot({
+          scater::plotUMAP(sfe, colour_by = clust, text_by = clust)
+          
+        })
+      })
+    }
+    }
+    )
 }

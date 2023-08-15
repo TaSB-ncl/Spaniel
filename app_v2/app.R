@@ -30,18 +30,13 @@ server <- function(input, output, session){
     if (is.null(inFile)) return(NULL)
     data <- readRDS(inFile$datapath) %>% unwrapSFE()
     spatialObj(data)
-    print(spatialObj())
     controlVars$fileUploaded <- TRUE
-    print(controlVars$fileUploaded)
   })
   
-  print(controlVars)
   
   
   observeEvent(input$file1, {
     if(controlVars$fileUploaded){
-      print("boops")
-      print(unique(spatialObj()$sample_id))
       updateSelectInput(session, NS("test","gene"), 
                         choices = rownames(spatialObj()), selected = NULL)
       updateSelectInput(session, NS("test","sample"), 
@@ -52,7 +47,6 @@ server <- function(input, output, session){
   
   observeEvent(input$file1, {
     if(controlVars$dropdownsLoaded){
-      print("plot server")
       spanielPlotServer("test", spatialObj())
     }
     
