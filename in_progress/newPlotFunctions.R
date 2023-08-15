@@ -1,51 +1,191 @@
-source("in_progress/wrap_unwrap_SFE_raster.R")
+#source("in_progress/wrap_unwrap_SFE_raster.R")
+library(SpatialExperiment)
 library(SpatialFeatureExperiment)
 library(tidyterra)
 library(ggplot2)
-
-sample_id = "C01"
-sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
+library(cols4all)
 
 
+################################################################################
+#' GetCoordinates from SFE
+#'
+#' @param sfe 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getCoordinatesSFE <- function(sfe, sample_id, sr_rotated){
+  ## pixel coordinates from sfe
+  coords_sample <- spatialCoords(sfe[, sfe$sample_id == sample_id]) %>% 
+    data.frame() 
+  
+  ## get x and y coordinates
+  coords_sample$X <- coords_sample[,1]
+  coords_sample$Y <- coords_sample[,2]
+  
+  ## rev y coordinates for plotting
+  extent_y <- terra::ext(sr_rotated)$ymin + terra::ext(sr_rotated)$ymax
+  coords_sample$Y <-  coords_sample$Y -  extent_y 
+  return(coords_sample)
+}
 
-sample_id = "C01"
+################################################################################
+
+
+
+################################################################################
+#' Format plot
+#' 
+#' Removes grid lines, background and ticks from plot
+#'
+#' @param p 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotFormatting <- function(p){
+  p2 <- p + 
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.title.x=ggplot2::element_blank(),
+                     axis.text.x=ggplot2::element_blank(),
+                     axis.ticks.x=ggplot2::element_blank(),
+                     axis.title.y=ggplot2::element_blank(),
+                     axis.text.y=ggplot2::element_blank(),
+                     axis.ticks.y=ggplot2::element_blank(),
+                   panel.border = element_blank(), 
+                   panel.background = element_blank(), 
+                   panel.grid.major = element_blank(), 
+                   panel.grid.minor = element_blank()) 
+    
+  return(p2)
+}
+
+
+################################################################################
+#' Add Plot Feature
+#' 
+#' Add plot feature to coordinates
+#'
+#' @param coords_sample 
+#' @param plot_type 
+#' @param plot_feat 
+#' @param sample_id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+addPlotFeatureSFE <- function(sfe, coords_sample, plot_type, plot_feat, sample_id){
+  if(plot_type == "gene"){
+    print("gene")
+    ## if gene plot join with counts
+    coords_sample[,plot_feat] <- logcounts(sfe)[rowData(sfe)$symbol == plot_feat,
+                                                sfe$sample_id == sample_id]  
+  } else{
+    print("metadata")
+    ## else if metdata plot join with col data
+    coords_sample[,plot_feat] <- colData(sfe)[sfe$sample_id == sample_id,
+                                              plot_feat] 
+  }
+  return(coords_sample)
+}
+
+################################################################################
+#' Spaniel Plot SFE
+#'
+#' @param sfe 
+#' @param plot_type 
+#' @param plot_feat 
+#' @param sample_id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+spanielPlot_SFE <- function(sfe, 
+                            plot_type = "metadata", 
+                            plot_feat, 
+                            sample_id, 
+                            ptSize = 2,
+                            ptSizeMin = 0, 
+                            ptSizeMax = 5, 
+                            colLow = "#ff3300", 
+                            colHigh = "#ffff00"
+                            ){
 
 
 ### get spatraster
 sr <- getImg(sfe, sample_id)@image
 
+sr_rotated <- terra::flip(sr)
 
-## pixel coordinates from sfe
-coords_sample <- spatialCoords(sfe[, sfe$sample_id == sample_id]) %>% 
-  data.frame()
+## get sample coordinates
+coords_sample <- getCoordinatesSFE(sfe, sample_id, sr_rotated)
 
-coords_sample$X <- coords_sample$pxl_col_in_fullres
-coords_sample$Y <- coords_sample$pxl_row_in_fullres
-coords_sample$Y <- coords_sample$Y * -1
+print("got coordinates")
+
+## add plot feature
+coords_sample <- addPlotFeatureSFE(sfe,
+                                   coords_sample, 
+                                   plot_type, 
+                                   plot_feat, 
+                                   sample_id)
+
+print("added plot feature")
 
 
-## test plot
-#df <- data.frame(X = 0:13636, Y = 0:13636  -13636)
-p1 <- ggplot(coords_sample) +
-  geom_spatraster_rgb(data = sr) + geom_point(aes(X, Y)) + scale_y_reverse()
 
 
+## check if data is discrete or discrete
+if(class(coords_sample[,plot_feat]) %in% c("logical", "character", "factor")){
+  print("discrete")
+  ## discrete
+  p1 <- ggplot(coords_sample, aes(colour = !! ensym(plot_feat))) +
+    geom_spatraster_rgb(data = sr_rotated) + 
+    scale_y_reverse() +
+    geom_point(aes(X, Y), alpha = 0.6)
+} else {
+  print("continuous")
+  ## continuous
+  ## remove 0 values for plotting
+  filter <- coords_sample[, plot_feat ] == 0
+  coords_sample[filter,plot_feat] <- NA
+  
+  p1 <- ggplot(coords_sample, aes(colour = !! ensym(plot_feat), 
+                                  size = !! ensym(plot_feat))) +
+    geom_spatraster_rgb(data = sr_rotated) + 
+    scale_y_reverse() +
+    geom_point(aes(X, Y), alpha = 0.6, ) +
+    ggplot2::scale_colour_gradient(low=colLow, high=colHigh) + 
+    ggplot2::scale_size(range = c(ptSizeMin, ptSizeMax)) 
+}
 
-## rotate spatraster
-p2 <- p1 + scale_y_reverse()
-p2
+## format plot (remove guides and ticks)
+p2 <- plotFormatting(p1)
 
-p2 + geom_point(aes(X, Y))
 
-## using sf
+return(p2)
+}
 
-sfeSample <- sfe[, sfe$sample_id == sample_id]
+# sfe <- readRDS("testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
+# sample_id = "C01"
+# plot_feat = "clust"
+# # 
+# ## test plots work for different types
+# spanielPlot_SFE(sfe,
+#                 sample_id = "C01",
+#                 plot_feat = "clust")
+# 
+# spanielPlot_SFE(sfe,
+#                 sample_id = "C01",
+#                 plot_feat = "subsets_mito_percent", ptSizeMin = 0,
+#                 ptSizeMax = 2)
+# 
+# spanielPlot_SFE(sfe, plot_type = "gene",
+#                 sample_id = "C01",
+#                 plot_feat = "Myl1")
+# # 
+# # 
 
-sf <- colGeometries(sfeSample)[[1]]
-sf$clust <- sfeSample$clust
-sf$barcodes <- rownames(sf)
-counts_df <- as.data.frame(t(as.matrix(sfeSample@assays@data$counts)))
-counts_df$barcodes <- rownames(counts_df)
-sf <- sf %>% left_join(counts_df, by = 'barcodes')
-ggplot(sf) +
-  geom_spatraster_rgb(data = sr) + geom_sf(aes(fill = clust))
