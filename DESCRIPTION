@@ -49,6 +49,7 @@ Collate:
     'parseImage.R'
     'removeSpots.R'
     'sfe_findDomain.R'
+    'sfe_helper_functions.R'
     'spanielPlotInternals.R'
     'spanielPlot.R'
     'shinySpaniel.R'
