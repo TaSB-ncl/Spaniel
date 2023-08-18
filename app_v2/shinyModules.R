@@ -5,15 +5,25 @@ spanielPlotUI <- function(id) {
   tabBox(#width = NULL, 
     #title = "input",
     tabPanel("Input",
-      selectInput(NS(id, "gene"), "Genes", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(NS(id, "sample"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(NS(id, "clustering"), "Clustering method", choices = c("clust"), selected = NULL, multiple = FALSE)),
+      selectizeInput(NS(id, "gene"), "Genes", choices = NULL, selected = NULL, multiple = FALSE),
+      selectizeInput(NS(id, "sample"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
+      selectizeInput(NS(id, "clustering"), "Clustering method", choices = NULL, selected = NULL, multiple = FALSE)),
     tabPanel("UMAP", plotOutput(NS(id, "umapall")))
       
   ),
-  box(
-    "Violin plot",
+  tabBox(
+    tabPanel(
+      "Violin Plot",
     plotOutput(NS(id, "vlnplot"))
+    ),
+    tabPanel(
+      "Spatial Plot",
+      plotOutput(NS(id, "plot"))
+    ),
+    tabPanel(
+      "UMAP",
+      plotOutput(NS(id, "umapplot"))
+    )
   )
   ),
     fluidRow(
@@ -21,13 +31,11 @@ spanielPlotUI <- function(id) {
   box(
     #width = NULL,
     "plot",
-    plotOutput(NS(id, "plot"))
   ),
   
   box(
    # width = NULL,
     "umap",
-    plotOutput(NS(id, "umapplot"))
   )
 )
 )
@@ -89,8 +97,8 @@ qcPlotUI <- function(id) {
       
       box(#width = NULL, 
         #title = "input",
-        selectInput(NS(id, "metric1"), "Metrics", choices = NULL, selected = NULL, multiple = FALSE),
-        selectInput(NS(id, "sample1"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
+        selectizeInput(NS(id, "metric1"), "Metrics", choices = NULL, selected = NULL, multiple = FALSE),
+        selectizeInput(NS(id, "sample1"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
         
       )
     )

@@ -37,18 +37,20 @@ server <- function(input, output, session){
   
   observeEvent(input$file1, {
     if(controlVars$fileUploaded){
-      updateSelectInput(session, NS("test","gene"), 
-                        choices = rownames(spatialObj()), selected = NULL)
-      updateSelectInput(session, NS("test","sample"), 
-                        choices = unique(spatialObj()$sample_id), selected = NULL)
-      updateSelectInput(session, NS("qc1","sample1"), 
-                        choices = unique(spatialObj()$sample_id), selected = NULL)
-      updateSelectInput(session, NS("qc1","metric1"), 
-                        choices = colnames(colData(spatialObj())), selected = NULL)
-      updateSelectInput(session, NS("qc2","sample1"), 
-                        choices = unique(spatialObj()$sample_id), selected = NULL)
-      updateSelectInput(session, NS("qc2","metric1"), 
-                        choices = colnames(colData(spatialObj())), selected = NULL)
+      updateSelectizeInput(session, NS("test","gene"), 
+                        choices = rownames(spatialObj()), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("test","sample"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("test","clustering"), 
+                           choices = grep("^clust", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc1","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc1","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc2","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc2","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
     }
       controlVars$dropdownsLoaded <- TRUE
   }) 

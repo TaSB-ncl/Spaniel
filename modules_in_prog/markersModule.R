@@ -65,7 +65,7 @@ markersServer <- function(id, sfe) {
           )
           
           output$vlnplot <- renderPlot({
-            scater::plotExpression(sfe, features = rownames(markersReactive()[[cluster_name]])[1:5], x = clust, colour_by = clust)
+            scater::plotExpression(sfe, features = rownames(markersReactive()[[cluster_name]])[1], x = clust, colour_by = clust)
           })
         }
       })
