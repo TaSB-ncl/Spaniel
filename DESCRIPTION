@@ -48,8 +48,9 @@ Collate:
     'createObjects.R'
     'parseImage.R'
     'removeSpots.R'
+    'sfe_findDomain.R'
     'spanielPlotInternals.R'
     'spanielPlot.R'
     'shinySpaniel.R'
     'tenX.R'
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
