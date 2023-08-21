@@ -5,8 +5,8 @@ markersUI <- function(id) {
     box(
       #width = NULL,
       "plot",
-      #DT::dataTableOutput(ns("table")),
-      plotOutput("vlnplot")
+      DT::dataTableOutput(ns("table")),
+      #plotOutput("vlnplot")
     ),
     
     box(#width = NULL, 
