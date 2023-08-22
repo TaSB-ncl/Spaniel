@@ -6,6 +6,8 @@ library(tidyverse)
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
+library(tidyterra)
+library(SpatialFeatureExperiment)
 source("appFuncs.R")
 source("../in_progress/wrap_unwrap_SFE_raster.R")
 source("shinyModules.R")
@@ -20,26 +22,48 @@ ui <- dashboardPage(
 server <- function(input, output, session){
   options(shiny.maxRequestSize=30*1024^3)
   
-  spatialObj <- reactive({
+  controlVars <- reactiveValues(fileUploaded = FALSE, dropdownsLoaded = FALSE)
+  spatialObj <- reactiveVal()
+  
+  observeEvent(input$file1, {
     inFile <- input$file1
     if (is.null(inFile)) return(NULL)
     data <- readRDS(inFile$datapath) %>% unwrapSFE()
-    return(data)
+    spatialObj(data)
+    controlVars$fileUploaded <- TRUE
   })
   
-  observe({
-    # doesn't actually do anything...
-    if(!is.null(inFile)){
-      updateSelectInput(session, NS("test","gene"), 
-                        choices = rownames(spatialObj()))
-      updateSelectInput(session, NS("test","sample"), 
-                        choices = unique(spatialObj()$sample_id))
-      spanielPlotServer("test", spatialObj())
+  
+  
+  observeEvent(input$file1, {
+    if(controlVars$fileUploaded){
+      updateSelectizeInput(session, NS("test","gene"), 
+                        choices = rownames(spatialObj()), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("test","sample"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("test","clustering"), 
+                           choices = grep("^clust", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc1","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc1","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc2","sample1"), 
+                        choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("qc2","metric1"), 
+                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
     }
-  })
+      controlVars$dropdownsLoaded <- TRUE
+  }) 
   
-  
- 
+  observeEvent(input$file1, {
+    if(controlVars$dropdownsLoaded){
+      qcPlotServer("qc1", spatialObj())
+      qcPlotServer("qc2", spatialObj())
+      spanielPlotServer("test", spatialObj())
+      
+    }
+    
+    })
   
    
 }

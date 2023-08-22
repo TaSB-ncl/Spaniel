@@ -29,7 +29,8 @@ dashBody <- dashboardBody(
               )
             ),
     tabItem(tabName = "spotplot",
-                spanielPlotUI("test")
+                spanielPlotUI("test"),
+                spanielPlotUI("test2")
             ),
     tabItem(tabName = "QC",
             fluidPage(

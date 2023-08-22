@@ -8,7 +8,8 @@ spanielPlotUI <- function(id) {
       selectizeInput(NS(id, "gene"), "Genes", choices = NULL, selected = NULL, multiple = FALSE),
       selectizeInput(NS(id, "sample"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
       selectizeInput(NS(id, "clustering"), "Clustering method", choices = NULL, selected = NULL, multiple = FALSE)),
-    tabPanel("UMAP", plotOutput(NS(id, "umapall")))
+    tabPanel("UMAP (all)", plotOutput(NS(id, "umapall"))),
+    tabPanel("Violin Plot (all)", plotOutput(NS(id, "vlnplotall")))
       
   ),
   tabBox(
@@ -25,19 +26,19 @@ spanielPlotUI <- function(id) {
       plotOutput(NS(id, "umapplot"))
     )
   )
-  ),
-    fluidRow(
-  
-  box(
-    #width = NULL,
-    "plot",
-  ),
-  
-  box(
-   # width = NULL,
-    "umap",
-  )
-)
+  )#,
+#    fluidRow(
+#   
+#   box(
+#     #width = NULL,
+#     "plot",
+#   ),
+#   
+#   box(
+#    # width = NULL,
+#     "umap",
+#   )
+# )
 )
 
   
@@ -79,6 +80,10 @@ spanielPlotServer <- function(id, sfe) {
         output$umapall <- renderPlot({
           scater::plotUMAP(sfe, colour_by = clust, text_by = clust)
           
+        })
+        
+        output$vlnplotall <- renderPlot({
+          scater::plotExpression(sfe, features = gene_name, x = clust, colour_by = clust)
         })
       })
     }
