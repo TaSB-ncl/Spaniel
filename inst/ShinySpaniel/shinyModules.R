@@ -7,7 +7,7 @@ spanielPlotUI <- function(id) {
     tabPanel("Input",
       selectizeInput(NS(id, "gene"), "Genes", choices = NULL, selected = NULL, multiple = FALSE),
       selectizeInput(NS(id, "sample"), "Sample", choices = NULL, selected = NULL, multiple = FALSE),
-      selectizeInput(NS(id, "clustering"), "Clustering method", choices = NULL, selected = NULL, multiple = FALSE)),
+      selectizeInput(NS(id, "clustering"), "Clustering method or domain", choices = NULL, selected = NULL, multiple = FALSE)),
     tabPanel("UMAP (all)", plotOutput(NS(id, "umapall"))),
     tabPanel("Violin Plot (all)", plotOutput(NS(id, "vlnplotall")))
       
@@ -54,27 +54,33 @@ spanielPlotServer <- function(id, sfe) {
         sample_id <<- input$sample
         clust <<- input$clustering
         
-        sr <- getImg(sfe, sample_id)@image
-        sfeSample <- sfe[, sfe$sample_id == sample_id]
-        sf <- colGeometries(sfeSample)[[1]]
-        sf$clust <- sfeSample$clust
-        sf$barcodes <- rownames(sf)
-        counts_df <- as.data.frame(t(as.matrix(sfeSample@assays@data$logcounts)))
-        counts_df$barcodes <- rownames(counts_df)
-        sf <- sf %>% left_join(counts_df, by = 'barcodes')
-        
+        # sr <- getImg(sfe, sample_id)@image
+        # sfeSample <- sfe[, sfe$sample_id == sample_id]
+        # sf <- colGeometries(sfeSample)[[1]]
+        # sf$clust <- sfeSample$clust
+        # sf$barcodes <- rownames(sf)
+        # counts_df <- as.data.frame(t(as.matrix(sfeSample@assays@data$logcounts)))
+        # counts_df$barcodes <- rownames(counts_df)
+        # sf <- sf %>% left_join(counts_df, by = 'barcodes')
+        # 
         gene_name <<- input$gene
         output$plot <-renderPlot({
-          ggplot(sf) +
-            geom_spatraster_rgb(data = sr) + geom_sf(data = sf, aes(fill = .data[[gene_name]] ) )
+          plotSpatialFeature(sfe, features = gene_name,
+                             image_id = "hires", 
+                             maxcell = 5e4, 
+                             ncol = 2, 
+                             sample_id = sample_id,
+                             color = "black", linetype = 0,
+                             
+          ) + theme_classic()  
         }, res = 96)
         
         output$umapplot <- renderPlot({
-          scater::plotUMAP(sfeSample, colour_by = gene_name, text_by = clust)
+          scater::plotUMAP(sfe[, sfe$sample_id == sample_id], colour_by = gene_name, text_by = clust)
         })
         
         output$vlnplot <- renderPlot({
-          scater::plotExpression(sfeSample, features = gene_name, x = clust, colour_by = clust)
+          scater::plotExpression(sfe[, sfe$sample_id == sample_id], features = gene_name, x = clust, colour_by = clust)
         })
         
         output$umapall <- renderPlot({
@@ -96,7 +102,7 @@ qcPlotUI <- function(id) {
   fluidRow(
       box(
         #width = NULL,
-        "plot",
+        #"plot",
         plotOutput(NS(id, "plot"))
       ),
       
@@ -117,20 +123,26 @@ qcPlotServer <- function(id, sfe) {
         if(input$metric1 == "" || input$sample1 == ""){return()}
         print(input$sample)
         sample_id <<- input$sample1
-        sr <- getImg(sfe, sample_id)@image
-        sfeSample <- sfe[, sfe$sample_id == sample_id]
-        sf <- colGeometries(sfeSample)[[1]]
-        sf$barcodes <- rownames(sf)
-        md_df <- colData(sfeSample) %>% as.data.frame()
-        # not actually barcodes??
-        md_df$barcodes <- rownames(sf)
-        sf <- sf %>% left_join(md_df, by = 'barcodes')
+        # sr <- getImg(sfe, sample_id)@image
+        # sfeSample <- sfe[, sfe$sample_id == sample_id]
+        # sf <- colGeometries(sfeSample)[[1]]
+        # sf$barcodes <- rownames(sf)
+        # md_df <- colData(sfeSample) %>% as.data.frame()
+        # # not actually barcodes??
+        # md_df$barcodes <- rownames(sf)
+        # sf <- sf %>% left_join(md_df, by = 'barcodes')
         
         metric <<- input$metric1
         
         output$plot <-renderPlot({
-          ggplot(sf) +
-            geom_spatraster_rgb(data = sr) + geom_sf(data = sf, aes(fill = .data[[metric]] ) )
+          plotSpatialFeature(sfe, features = metric,
+                             image_id = "hires", 
+                             maxcell = 5e4, 
+                             ncol = 2, 
+                             sample_id = sample_id,
+                             color = "black", linetype = 0,
+                             
+          ) + theme_classic() 
         }, res = 96)
         
 

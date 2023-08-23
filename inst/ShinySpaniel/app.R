@@ -9,7 +9,7 @@ library(shinyjs)
 library(tidyterra)
 library(SpatialFeatureExperiment)
 source("appFuncs.R")
-source("../../in_progress/wrap_unwrap_SFE_raster.R")
+#source("../../in_progress/wrap_unwrap_SFE_raster.R")
 source("shinyModules.R")
 source("shinyDash.R")
 
@@ -42,13 +42,13 @@ server <- function(input, output, session){
       updateSelectizeInput(session, NS("test","sample"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test","clustering"), 
-                           choices = grep("^clust", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
+                           choices = grep("^clust|^domain", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test2","gene"), 
                            choices = rownames(spatialObj()), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test2","sample"), 
                            choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test2","clustering"), 
-                           choices = grep("^clust", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
+                           choices = grep("^clust|domain^", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc1","sample1"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc1","metric1"), 
