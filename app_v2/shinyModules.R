@@ -1,5 +1,9 @@
+instructions <- HTML(paste("How to use the app",  "step 1'", sep = "</br>"))
+
 spanielPlotUI <- function(id) {
-  fluidPage(fluidRow(
+  fluidPage(
+    
+    fluidRow(
     tabBox(
       tabPanel(
         "Input",
@@ -25,18 +29,29 @@ spanielPlotUI <- function(id) {
           multiple = FALSE
         )
       ),
-      tabPanel("UMAP - Clusters", plotOutput(NS(id, "umapall")))
-    ),
+      tabPanel("Instructions", instructions)),
+   
     
-    box(title = "Spatial Plot",
-        plotOutput(NS(id, "plot")))
+    tabBox(
+      tabPanel("Spatial Plot",
+               plotOutput(NS(id, "spaniel_plot"))),
+      tabPanel("Spatial - Clusters",
+               plotOutput(NS(id, "spaniel_cluster")))
+    )
+    
+    
+    
   ),
   
   fluidRow(
     box(title = "Violin Plot",
         plotOutput(NS(id, "vlnplot"))),
-    box(title = "UMAP Plot",
-        plotOutput(NS(id, "umapplot")))
+    tabBox(
+      tabPanel("UMAP Plot",
+        plotOutput(NS(id, "umapplot"))),
+      tabPanel("UMAP - Clusters",
+               plotOutput(NS(id, "umapall")))
+    )
   ))
 }
 
@@ -53,34 +68,37 @@ spanielPlotServer <- function(id, sfe) {
         sample_id <<- input$sample
         clust <<- input$clustering
         sfeSample <- sfe[, sfe$sample_id == sample_id]
-        # sr <- getImg(sfe, sample_id)@image
-        # 
-        # sf <- colGeometries(sfeSample)[[1]]
-        # sf$clust <- sfeSample$clust
-        # sf$barcodes <- rownames(sf)
-        # counts_df <-
-        #   as.data.frame(t(as.matrix(
-        #     sfeSample@assays@data$logcounts
-        #   )))
-        # counts_df$barcodes <- rownames(counts_df)
-        # sf <- sf %>% left_join(counts_df, by = 'barcodes')
-        # 
-        # gene_name <<- input$gene
-        # output$plot <- renderPlot({
-        #   ggplot(sf) +
-        #     geom_spatraster_rgb(data = sr) + geom_sf(data = sf, aes(fill = .data[[gene_name]]))
-        # }, res = 96)
+        gene_symbol <<- input$gene
+        gene_id <- rownames(rowData(sfe))[rowData(sfe)$symbol== gene_symbol]
+       
+        
+        output$spaniel_plot <- renderPlot({
+          Spaniel::spanielPlot_SFE(sfeSample,  
+                        sample_id = sample_id, 
+                        plot_feat =gene_symbol,
+                        plot_type = "gene",
+                        ptSizeMin = 0, 
+                        ptSizeMax = 2) 
+        })
+        
+        output$spaniel_cluster <- renderPlot({
+          Spaniel::spanielPlot_SFE(sfeSample,  
+                                   sample_id = sample_id, 
+                                   plot_feat = clust,
+                                   plot_type = "metadata") 
+        })
+        
         
         output$umapplot <- renderPlot({
           scater::plotUMAP(sfeSample,
-                           colour_by = gene_name,
+                           colour_by = gene_id,
                            text_by = clust)
         })
         
         output$vlnplot <- renderPlot({
           scater::plotExpression(
             sfeSample,
-            features = gene_name,
+            features = gene_id,
             x = clust,
             colour_by = clust
           )

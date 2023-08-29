@@ -38,7 +38,7 @@ server <- function(input, output, session){
   observeEvent(input$file1, {
     if(controlVars$fileUploaded){
       updateSelectizeInput(session, NS("test","gene"), 
-                        choices = rownames(spatialObj()), selected = NULL, server = TRUE)
+                        choices = rowData(sfe)$symbol, selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test","sample"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test","clustering"), 
