@@ -8,8 +8,8 @@ library(shinydashboard)
 library(shinyjs)
 library(tidyterra)
 library(SpatialFeatureExperiment)
+library(Spaniel)
 source("appFuncs.R")
-source("../in_progress/wrap_unwrap_SFE_raster.R")
 source("shinyModules.R")
 source("shinyDash.R")
 
@@ -20,7 +20,7 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session){
-  options(shiny.maxRequestSize=30*1024^3)
+  options(shiny.maxRequestSize=100*1024^3)
   
   controlVars <- reactiveValues(fileUploaded = FALSE, dropdownsLoaded = FALSE)
   spatialObj <- reactiveVal()
