@@ -317,16 +317,20 @@ sfe <- readRDS("../testData/rObjects/wrapped_sfe.rds") %>% unwrapSFE()
 sfe <- unwrapSFE(sfe_wrapped)
 
 ## check it loads
-p1 <- plotSpatialFeature(sfe, features = "domain",
-                   image_id = "hires", 
-                   maxcell = 5e4, 
-                   ncol = 2, 
-                   sample_id = "C01",
-                   color = "black", linetype = 0,
-                   
-                   ) + theme_classic()
-p1
+# p1 <- plotSpatialFeature(sfe, features = "domain",
+#                    image_id = "hires", 
+#                    maxcell = 5e4, 
+#                    ncol = 2, 
+#                    sample_id = "C01",
+#                    color = "black", linetype = 0,
+#                    
+#                    ) + theme_classic()
+# p1
 
-
+p1 <- Spaniel::spanielPlot_SFE(sfe,  
+                 sample_id = "C01", 
+                 plot_feat = "", 
+                 ptSizeMin = 0, 
+                 ptSizeMax = 2) 
 ```
 
