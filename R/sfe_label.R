@@ -1,15 +1,14 @@
-library(SpatialFeatureExperiment)
-library(terra)
-library(Spaniel)
-library(dplyr)
-
-sfe_control <- readRDS("testData/rObjects/wrapped_sfe_control.rds") %>% unwrapSFE()
-
-sfe <- readRDS("testData/rObjects/wrapped_sfe_single.rds") %>% unwrapSFE()
-
-grps <- c("clust", "domain", "radiation_field")
-qc <- c("total", "sum", "subsets_mito_percent", "in_tissue")
-exp_cond <- c("condition")
+#' Label SFE for Shiny
+#'
+#' @param sfe 
+#' @param grp_cols 
+#' @param qc_cols 
+#' @param exp_cond_cols 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 labelSFE <- function(sfe, 
                      grp_cols, 
                      qc_cols,
@@ -27,11 +26,9 @@ labelSFE <- function(sfe,
   
 }
 
-sfe_control <- labelSFE(sfe_control, grps, qc, exp_cond)
-sfe_control %>% wrapSFE()
+
 ## reload sfe and test
 ## save sfe
 ## document, add to git, add to workshop
 ## change shiny to select for columns
 ## 
-sfe %>% wrapSFE() %>% saveRDS("testData/rObjects/wrapped_sfe_single.rds")
