@@ -41,8 +41,8 @@ server <- function(input, output, session){
                         choices = rowData(spatialObj())$symbol, selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("test","sample"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
-      updateSelectizeInput(session, NS("test","clustering"), 
-                           choices = grep("^clust", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
+      updateSelectizeInput(session, NS("test","group"), 
+                           choices = grep("^grp_", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc1","sample1"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc1","metric1"), 

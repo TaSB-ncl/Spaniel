@@ -22,8 +22,8 @@ spanielPlotUI <- function(id) {
           multiple = FALSE
         ),
         selectizeInput(
-          NS(id, "clustering"),
-          "Clustering method",
+          NS(id, "group"),
+          "Groups (eg clusters, domains)",
           choices = NULL,
           selected = NULL,
           multiple = FALSE
@@ -59,14 +59,14 @@ spanielPlotUI <- function(id) {
 spanielPlotServer <- function(id, sfe) {
   moduleServer(id, function(input, output, session) {
     if (class(sfe) == "SpatialFeatureExperiment") {
-      observeEvent(c(input$gene, input$sample, input$clustering), {
+      observeEvent(c(input$gene, input$sample, input$group), {
         if (input$gene == "" ||
-            input$sample == "" || input$clustering == "") {
+            input$sample == "" || input$group == "") {
           return()
         }
         print(input$sample)
         sample_id <<- input$sample
-        clust <<- input$clustering
+        clust <<- input$group
         sfeSample <- sfe[, sfe$sample_id == sample_id]
         gene_symbol <<- input$gene
         gene_id <- rownames(rowData(sfe))[rowData(sfe)$symbol== gene_symbol]
