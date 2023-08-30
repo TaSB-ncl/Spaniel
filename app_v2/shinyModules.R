@@ -117,7 +117,7 @@ spanielPlotServer <- function(id, sfe) {
 qcPlotUI <- function(id) {
   fluidRow(box(#width = NULL,
     "plot",
-    plotOutput(NS(id, "plot"))),
+    plotOutput(NS(id, "qc_plot"))),
     
     box(
       #width = NULL,
@@ -149,21 +149,15 @@ qcPlotServer <- function(id, sfe) {
         }
         print(input$sample)
         sample_id <<- input$sample1
-        sr <- getImg(sfe, sample_id)@image
         sfeSample <- sfe[, sfe$sample_id == sample_id]
-        sf <- colGeometries(sfeSample)[[1]]
-        sf$barcodes <- rownames(sf)
-        md_df <- colData(sfeSample) %>% as.data.frame()
-        # not actually barcodes??
-        md_df$barcodes <- rownames(sf)
-        sf <- sf %>% left_join(md_df, by = 'barcodes')
-        
         metric <<- input$metric1
         
-        output$plot <- renderPlot({
-          ggplot(sf) +
-            geom_spatraster_rgb(data = sr) + geom_sf(data = sf, aes(fill = .data[[metric]]))
-        }, res = 96)
+        output$qc_plot <- renderPlot({
+          Spaniel::spanielPlot_SFE(sfeSample,  
+                                   sample_id = sample_id, 
+                                   plot_feat = metric,
+                                   plot_type = "metadata") 
+        })
         
         
       })

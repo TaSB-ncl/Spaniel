@@ -46,11 +46,11 @@ server <- function(input, output, session){
       updateSelectizeInput(session, NS("qc1","sample1"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc1","metric1"), 
-                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
+                        choices = grep("^qc_", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc2","sample1"), 
                         choices = unique(spatialObj()$sample_id), selected = NULL, server = TRUE)
       updateSelectizeInput(session, NS("qc2","metric1"), 
-                        choices = colnames(colData(spatialObj())), selected = NULL, server = TRUE)
+                        choices = grep("^qc_", names(colData(spatialObj())), value = TRUE), selected = NULL, server = TRUE)
     }
       controlVars$dropdownsLoaded <- TRUE
   }) 
