@@ -117,7 +117,11 @@ spanielPlot_SFE <- function(sfe,
 
 
 ### get spatraster
-sr <- getImg(sfe, sample_id)@image
+if (class(getImg(sfe, sample_id)@image) == "PackedSpatRaster"){
+  sr <- getImg(sfe, sample_id)@image %>% terra::unwrap()
+}else{
+  sr <- getImg(sfe, sample_id)@image
+}
 
 sr_rotated <- terra::flip(sr)
 
