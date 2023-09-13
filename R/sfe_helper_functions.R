@@ -1,9 +1,9 @@
-ncomponents = 50
-proportion=0.1
-autoPC = TRUE
-K = 30
-cluster_function = "leiden"
-dim_red = "PCA"
+# ncomponents = 50
+# proportion=0.1
+# autoPC = TRUE
+# K = 30
+# cluster_function = "leiden"
+# dim_red = "PCA"
 
 
 
