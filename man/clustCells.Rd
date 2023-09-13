@@ -4,7 +4,7 @@
 \alias{clustCells}
 \title{Cluster helper function}
 \usage{
-clustCells(sfe, K, cluster_function = "leiden", dim_red = "PCA")
+clustCells(sfe, K = 30, cluster_function = "leiden", dim_red = "PCA")
 }
 \arguments{
 \item{sfe}{}
