@@ -1,11 +1,16 @@
-instructions <- HTML(paste("How to use the app",  "step 1'", sep = "</br>"))
+#' @import shiny
+#' @import shinydashboard
+#' @import shinyjs
+#' 
+instructions <- shiny::HTML(paste("How to use the app",  
+                                  "step 1'", sep = "</br>"))
 
 spanielPlotUI <- function(id) {
   fluidPage(
     
     fluidRow(
-    tabBox(
-      tabPanel(
+      shinydashboard::tabBox(
+        shiny::tabPanel(
         "Input",
         selectizeInput(
           NS(id, "gene"),
@@ -29,13 +34,13 @@ spanielPlotUI <- function(id) {
           multiple = FALSE
         )
       ),
-      tabPanel("Instructions", instructions)),
+      shiny::tabPanel("Instructions", instructions)),
    
     
-    tabBox(
-      tabPanel("Spatial Plot",
+      shinydashboard::tabBox(
+        shiny::tabPanel("Spatial Plot",
                plotOutput(NS(id, "spaniel_plot"))),
-      tabPanel("Spatial - Clusters",
+        shiny::tabPanel("Spatial - Clusters",
                plotOutput(NS(id, "spaniel_cluster")))
     )
     
@@ -44,12 +49,12 @@ spanielPlotUI <- function(id) {
   ),
   
   fluidRow(
-    box(title = "Violin Plot",
+    shinydashboard::box(title = "Violin Plot",
         plotOutput(NS(id, "vlnplot"))),
-    tabBox(
-      tabPanel("UMAP Plot",
+    shinydashboard::tabBox(
+      shiny::tabPanel("UMAP Plot",
         plotOutput(NS(id, "umapplot"))),
-      tabPanel("UMAP - Clusters",
+      shiny::tabPanel("UMAP - Clusters",
                plotOutput(NS(id, "umapall")))
     )
   ))
@@ -115,11 +120,11 @@ spanielPlotServer <- function(id, sfe) {
 
 
 qcPlotUI <- function(id) {
-  fluidRow(box(#width = NULL,
+  fluidRow(shinydashboard::box(#width = NULL,
     "plot",
     plotOutput(NS(id, "qc_plot"))),
     
-    box(
+    shinydashboard::box(
       #width = NULL,
       #title = "input",
       selectizeInput(

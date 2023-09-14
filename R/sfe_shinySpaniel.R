@@ -26,7 +26,7 @@
 
 
 
-ui <- dashboardPage(
+ui <- shinydashboard::dashboardPage(
   header,
   sidebar,
   dashBody, shinyjs::useShinyjs()
@@ -89,7 +89,7 @@ server <- function(input, output, session){
 #' @export
 #'
 #' @examples shinySpaniel_SFE()
-shinySpaniel_SFE <- function(UI = ui, server = Server) {
+runShinySpaniel_SFE <- function(UI = ui, server = Server) {
   require(shiny)
   shinyApp(UI, Server)
 }
