@@ -4,12 +4,12 @@
 #' @import tidyverse
 #' @import tidyterra
 #' @import SpatialFeatureExperiment
-#' @import Spaniel
 #' @import tidyverse
 #' @import tidyverse
 #' 
 #' @include shinyModules.R
 #' @include shinyDash.R
+
 
 # library(tidyverse)
 # library(shiny)
