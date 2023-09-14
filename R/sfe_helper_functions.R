@@ -11,9 +11,10 @@
 #' 
 #' A wrapper function to normalise
 #'
-#' @param ncomponents 
-#' @param proportion 
-#' @param autoPC 
+#' @param ncomponents the number of principle components to use
+#' @param proportion proportion of highly variable genes to use
+#' @param autoPC logical vector determines whether to remove principal 
+#' components corresponding to technical noise
 #' @param sfe 
 #'
 #' @return
@@ -59,10 +60,10 @@ preProcess <- function(sfe,
 #' Uses the clusterCells function to add cluster results 
 #' directly to sfe object.
 #'
-#' @param sfe 
-#' @param K 
-#' @param cluster_function 
-#' @param dim_red 
+#' @param sfe  a SpatialFeatureExperiment object with log normalised counts
+#' @param K the number of nearest neighbours to use during graph construction
+#' @param cluster_function any igraph community detection algorithm
+#' @param dim_red the reduced dimensions to use for clustering
 #'
 #' @return
 #' @export
