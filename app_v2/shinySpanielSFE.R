@@ -1,19 +1,30 @@
 #' @import shiny
 #' @import shinydashboard
 #' @import shinyjs
+#' @import tidyverse
+#' @import tidyterra
+#' @import SpatialFeatureExperiment
+#' @import Spaniel
+#' @import tidyverse
+#' @import tidyverse
+#' 
+#' @include shinyModules.R
+#' @include shinyDash.R
 
-library(tidyverse)
-library(shiny)
-library(shinydashboard)
-library(shinyjs)
-#library(terra)
-library(tidyterra)
-#library(SpatialExperiment)
-library(SpatialFeatureExperiment)
-library(Spaniel)
-source("appFuncs.R")
-source("shinyModules.R")
-source("shinyDash.R")
+# library(tidyverse)
+# library(shiny)
+# library(shinydashboard)
+# library(shinyjs)
+# #library(terra)
+# library(tidyterra)
+# #library(SpatialExperiment)
+# library(SpatialFeatureExperiment)
+# library(Spaniel)
+# source("appFuncs.R")
+# source("shinyModules.R")
+# source("shinyDash.R")
+
+
 
 ui <- dashboardPage(
   header,
@@ -71,4 +82,17 @@ server <- function(input, output, session){
 }
 
 # Run app ----
-shinyApp(ui, server)
+#' Run shinySpaniel
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples shinySpaniel_SFE()
+shinySpaniel_SFE <- function(UI = ui, server = Server) {
+  require(shiny)
+  shinyApp(UI, Server)
+}
+
+
+
