@@ -15,11 +15,12 @@ preProcess(
 \arguments{
 \item{sfe}{}
 
-\item{ncomponents}{}
+\item{ncomponents}{the number of principle components to use}
 
-\item{proportion}{}
+\item{proportion}{proportion of highly variable genes to use}
 
-\item{autoPC}{}
+\item{autoPC}{logical vector determines whether to remove principal 
+components corresponding to technical noise}
 }
 \description{
 A wrapper function to normalise

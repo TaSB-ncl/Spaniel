@@ -7,13 +7,13 @@
 clustCells(sfe, K = 30, cluster_function = "leiden", dim_red = "PCA")
 }
 \arguments{
-\item{sfe}{}
+\item{sfe}{a SpatialFeatureExperiment object with log normalised counts}
 
-\item{K}{}
+\item{K}{the number of nearest neighbours to use during graph construction}
 
-\item{cluster_function}{}
+\item{cluster_function}{any igraph community detection algorithm}
 
-\item{dim_red}{}
+\item{dim_red}{the reduced dimensions to use for clustering}
 }
 \description{
 Uses the clusterCells function to add cluster results 
