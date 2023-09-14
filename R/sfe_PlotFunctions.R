@@ -1,15 +1,18 @@
-#source("in_progress/wrap_unwrap_SFE_raster.R")
-#library(SpatialExperiment)
-#library(SpatialFeatureExperiment)
-#library(tidyterra)
-#library(ggplot2)
-#library(cols4all)
+#' @import SpatialExperiment
+#' @import SpatialFeatureExperiment
+#' @import tidyterra
+#' @import ggplot2
+#' @import cols4all
+
+
 
 
 ################################################################################
 #' GetCoordinates from SFE
 #'
 #' @param sfe 
+#' @param sample_id 
+#' @param sr_rotated 
 #'
 #' @return
 #' @export
@@ -146,7 +149,7 @@ print("added plot feature")
 if(class(coords_sample[,plot_feat]) %in% c("logical", "character", "factor")){
   print("discrete")
   ## discrete
-  p1 <- ggplot(coords_sample, aes(colour = !! ensym(plot_feat))) +
+  p1 <- ggplot2::ggplot(coords_sample, aes(colour = !! ensym(plot_feat))) +
     geom_spatraster_rgb(data = sr_rotated) + 
     scale_y_reverse() +
     geom_point(aes(X, Y), alpha = 0.6)
@@ -157,7 +160,7 @@ if(class(coords_sample[,plot_feat]) %in% c("logical", "character", "factor")){
   filter <- coords_sample[, plot_feat ] == 0
   coords_sample[filter,plot_feat] <- NA
   
-  p1 <- ggplot(coords_sample, aes(colour = !! ensym(plot_feat), 
+  p1 <- ggplot2::ggplot(coords_sample, aes(colour = !! ensym(plot_feat), 
                                   size = !! ensym(plot_feat))) +
     geom_spatraster_rgb(data = sr_rotated) + 
     scale_y_reverse() +
