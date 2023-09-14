@@ -88,8 +88,8 @@ server <- function(input, output, session){
 #' @return
 #' @export
 #'
-#' @examples shinySpaniel_SFE()
-runShinySpaniel_SFE <- function(UI = ui, server = Server) {
+#' @examples runShinySpaniel_SFE()
+runShinySpaniel_SFE <- function(UI = ui, Server = server) {
   require(shiny)
   shinyApp(UI, Server)
 }

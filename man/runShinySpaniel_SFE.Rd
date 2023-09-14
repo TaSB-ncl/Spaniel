@@ -4,11 +4,11 @@
 \alias{runShinySpaniel_SFE}
 \title{Run shinySpaniel}
 \usage{
-runShinySpaniel_SFE(UI = ui, server = Server)
+runShinySpaniel_SFE(UI = ui, Server = server)
 }
 \description{
 Run shinySpaniel
 }
 \examples{
-shinySpaniel_SFE()
+runShinySpaniel_SFE()
 }
